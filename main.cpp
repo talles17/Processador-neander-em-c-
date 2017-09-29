@@ -8,70 +8,107 @@ using std::endl ;
 
 int main () {
 
-int memoria[256] ; // memoria de instruçao e dados
-int endereco[128] ; //endereço dos dados
-int comando{0} ;
-int tam_instrucao{0} ;
-int tam_dados{0} ;
-int acumulador{0} ;
-int reg_instrucao{0} ;
-int pc{0} ; 
-bool N{false} ;
-bool Z{false} ;
+	int *memoria = new int[256] ; // memoria de instruçao e dados
+	int *endereco = new int[128] ; //endereço dos dados
+	int comando{0} ;
+	int tam_instrucao{0} ;
+	int tam_dados{0} ;
+	int acumulador{0} ;
+	int reg_instrucao{0} ;
+	int pc{0} ; 
+	bool N{false} ;
+	bool Z{true} ;
 
-cout << "Processador Neander." << endl ;
+	cout << "Processador Neander.\n\n" << endl ;
 
 	
+ 	
+ 	altera_acumulador (acumulador, N , Z) ;
  	inserindo(memoria, endereco , tam_instrucao, tam_dados) ;
 	
- 	cout << "End 	Dado 	Mnemonico" << endl ;
-	for (int ii{0} ; ii < tam_instrucao ; ii++) {
-		cout << ii+1 << "	" << memoria[ii] << " " << endereco[ii]  << endl ;
-	}
+
+	mostrar_mem_instrucao(memoria, endereco, tam_instrucao) ;
+	mostrar_mem_dado(memoria, tam_dados) ;
 
 
-	cout << "End 	Dado" << endl ;
-	for (int ii{0} ; ii < tam_dados ; ii++) {
-		cout << ii+127 << "	" << memoria[ii+127] << endl ;
-	}
-
-	for (int ii{0} ; ii < tam_instrucao ; ii++) {
+	
+	
+	int ii{0} ;
+	//cout << "tam_instrucao: " << tam_instrucao << endl; ;
+	while (ii < tam_instrucao) {
 		switch(memoria[ii]) {
-			case 0 :
 
 			case 1 :
-				//STA() ;
-
+				STA(acumulador, endereco[ii] ,memoria) ;
+				pc = ii+1 ;
+				ii++ ;
+				//cout << "ii : " << ii << endl ;
+				mostrar_info (acumulador,pc , N , Z) ;
+				break ;
 			case 2 :
-				LDA(acumulador , ii+128 , memoria) ;
-				cout << acumulador << endl ;
+				LDA(acumulador , ii+128 , memoria, N , Z) ;
+				pc = ii+1 ;
+				ii++ ;
+				//cout << "ii : " << ii << endl ;
+				mostrar_info (acumulador,pc , N , Z) ;
+				break ;
 			case 3 :
-				ADD(acumulador, ii+129 , memoria) ;
-				cout << acumulador << endl ;
+				ADD(acumulador, ii+128 , memoria, N , Z) ;
+				pc = ii+1 ;
+				ii++ ;
+				//cout << "ii : " << ii << endl ;
+				mostrar_info (acumulador,pc , N , Z) ;
+				break ;
 			case 4 :
-				//OK() ;
+				//OR() ;
 			case 5 :
-				//AND() ;
+				AND(acumulador, ii+128, memoria, N , Z) ;
+				pc = ii+1 ;
+				ii++ ;
+				mostrar_info (acumulador,pc , N , Z) ;
+				break ;
 			case 6 :
-				//NOT() ;
+				NOT(acumulador, memoria) ;
+				pc = ii+1 ;
+				ii++ ;
+				mostrar_info (acumulador,pc , N , Z) ;
+				break ;
 			case 8 :
-				//JMP() ;
+				JMP(ii , endereco[ii]) ;
+				pc = ii ;
+				mostrar_info (acumulador,pc , N , Z) ;
+				break ;
 			case 9 : 
-				//JN() ;
+				JN(ii , endereco[ii], acumulador) ;
+				pc = ii ;
+				mostrar_info (acumulador,pc , N , Z) ;
+				break ;
 			case 10 :
-				//JZ() ;
+				JZ(ii , endereco[ii], acumulador) ;
+				pc = ii ;
+				mostrar_info (acumulador,pc , N , Z) ;
+				break ;
 			case 11 :
-				//JNZ() ;
+				JNZ(ii , endereco[ii], acumulador) ;
+				pc = ii ;
+				mostrar_info (acumulador,pc , N , Z) ;
+				break ;
 			case 15 :
+				pc = ii+1 ;
+				ii++ ;
+				mostrar_info (acumulador,pc , N , Z) ;
 				break ;
 			default :
 				cout << "Comando invalido\n" ;
+				break ;
 		}
 	}
 
+	mostrar_mem_dado(memoria, tam_dados) ;
 
 
-
+	delete [] memoria ;
+	delete [] endereco ;
 
 return EXIT_SUCCESS ;
 
